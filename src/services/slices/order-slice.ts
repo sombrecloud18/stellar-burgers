@@ -3,6 +3,7 @@ import { orderBurgerApi } from '@api';
 import { TOrder } from '@utils-types';
 import { getFeedsApi, getOrdersApi, getOrderByNumberApi } from '@api';
 import { clearConstructor } from './constructor-slice';
+import { ApiError, getErrorMessage } from '../../utils/error-types';
 
 interface IOrderState {
   order: TOrder | null;
@@ -32,10 +33,11 @@ export const createOrder = createAsyncThunk(
   async (data: string[], { rejectWithValue, dispatch }) => {
     try {
       const response = await orderBurgerApi(data);
+      dispatch(clearOrder());
       dispatch(clearConstructor());
       return response;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Ошибка создания заказа');
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -47,8 +49,8 @@ export const getFeedOrders = createAsyncThunk(
     try {
       const response = await getFeedsApi();
       return response;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Ошибка получения ленты заказов');
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -60,10 +62,8 @@ export const getUserOrders = createAsyncThunk(
     try {
       const orders = await getOrdersApi();
       return orders;
-    } catch (error: any) {
-      return rejectWithValue(
-        error.message || 'Ошибка получения заказов пользователя'
-      );
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -75,10 +75,8 @@ export const getOrderByNumber = createAsyncThunk(
     try {
       const response = await getOrderByNumberApi(data);
       return response.orders[0];
-    } catch (error: any) {
-      return rejectWithValue(
-        error.message || 'Ошибка получения заказа по номеру'
-      );
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -89,8 +87,9 @@ export const orderSlice = createSlice({
   initialState,
   reducers: {
     clearOrder: (state) => {
-      state.createdOrder = null;
+      state.order = null;
       state.error = null;
+      state.createdOrder = null;
     },
     clearOrderError: (state) => {
       state.error = null;

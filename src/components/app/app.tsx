@@ -29,6 +29,7 @@ const App = () => {
     dispatch(getUser());
     dispatch(fetchIngredients());
   }, [dispatch]);
+
   const handleModalClose = () => {
     navigate(-1);
   };

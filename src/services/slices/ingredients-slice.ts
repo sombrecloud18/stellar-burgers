@@ -38,7 +38,7 @@ const ingredientsSlice = createSlice({
       });
   }
 });
-// В ingredients-slice.ts
+
 export const selectIngredients = (state: { ingredients: IngredientsState }) =>
   state.ingredients.ingredientsArr;
 

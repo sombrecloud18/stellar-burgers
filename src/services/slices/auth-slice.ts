@@ -12,6 +12,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { TUser } from '@utils-types';
 import { deleteCookie, setCookie } from '../../utils/cookie';
 import { RootState } from '../store';
+import { ApiError, getErrorMessage } from '../../utils/error-types';
 
 interface TAuthState {
   user: TUser | null;
@@ -38,9 +39,8 @@ export const login = createAsyncThunk(
       setCookie('accessToken', data.accessToken);
       localStorage.setItem('refreshToken', data.refreshToken);
       return data.user;
-    } catch (error: any) {
-      // Используем rejectWithValue для передачи ошибки
-      return rejectWithValue(error.message || 'Ошибка входа');
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -53,9 +53,8 @@ export const register = createAsyncThunk(
       setCookie('accessToken', data.accessToken);
       localStorage.setItem('refreshToken', data.refreshToken);
       return data.user;
-    } catch (error: any) {
-      // Используем rejectWithValue для передачи ошибки
-      return rejectWithValue(error.message || 'Ошибка регистрации');
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -64,10 +63,10 @@ export const forgotPassword = createAsyncThunk(
   'auth/forgot-password',
   async (email: string, { rejectWithValue }) => {
     try {
-      const data = await forgotPasswordApi({ email });
+      await forgotPasswordApi({ email });
       return true;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Ошибка восстановления пароля');
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -76,10 +75,10 @@ export const resetPassword = createAsyncThunk(
   'auth/reset-password',
   async (data: { password: string; token: string }, { rejectWithValue }) => {
     try {
-      const res = await resetPasswordApi(data);
+      await resetPasswordApi(data);
       return true;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Ошибка сброса пароля');
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -90,8 +89,8 @@ export const getUser = createAsyncThunk(
     try {
       const res = await getUserApi();
       return res.user;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Ошибка получения пользователя');
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -102,8 +101,8 @@ export const updateUser = createAsyncThunk(
     try {
       const res = await updateUserApi(user);
       return res.user;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Ошибка обновления пользователя');
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -112,12 +111,12 @@ export const logout = createAsyncThunk(
   'auth/logout',
   async (_, { rejectWithValue }) => {
     try {
-      const res = await logoutApi();
+      await logoutApi();
       localStorage.removeItem('refreshToken');
       deleteCookie('accessToken');
       return null;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Ошибка выхода');
+    } catch (error) {
+      return rejectWithValue(getErrorMessage(error));
     }
   }
 );
@@ -147,7 +146,7 @@ export const authSlice = createSlice({
       })
       .addCase(register.rejected, (state, action) => {
         state.isLoading = false;
-        state.errors = (action.payload as string) || 'Ошибка регистрации';
+        state.errors = action.payload as string;
       })
       // Логин
       .addCase(login.pending, (state) => {
@@ -161,7 +160,7 @@ export const authSlice = createSlice({
       })
       .addCase(login.rejected, (state, action) => {
         state.isLoading = false;
-        state.errors = (action.payload as string) || 'Ошибка авторизации';
+        state.errors = action.payload as string;
       })
       // Выход
       .addCase(logout.fulfilled, (state) => {
