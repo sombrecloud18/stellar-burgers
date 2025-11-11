@@ -8,7 +8,7 @@ export interface IngredientsState {
   loading: boolean;
 }
 
-const initialState: IngredientsState = {
+export const initialState: IngredientsState = {
   ingredientsArr: [],
   error: null,
   loading: false
@@ -32,8 +32,9 @@ const ingredientsSlice = createSlice({
         state.loading = false;
         state.ingredientsArr = action.payload;
       })
-      .addCase(fetchIngredients.rejected, (state) => {
+      .addCase(fetchIngredients.rejected, (state, action) => {
         state.loading = false;
+        state.error = action.error.message || 'Ошибка загрузки ингредиентов';
         console.log('Ошибка загрузки ингредиентов');
       });
   }
