@@ -1,4 +1,9 @@
-import { authReducer, login, register } from '../services/slices/auth-slice';
+import {
+  authReducer,
+  login,
+  register,
+  initialState
+} from '../services/slices/auth-slice';
 
 jest.mock('../utils/burger-api.ts', () => ({
   loginUserApi: jest.fn(),
@@ -9,13 +14,6 @@ const mockLoginUserApi = require('../utils/burger-api.ts').loginUserApi;
 const mockRegisterUserApi = require('../utils/burger-api.ts').registerUserApi;
 
 describe('Тест слайса авторизации', () => {
-  const initialState = {
-    user: null,
-    isAuthChecked: false,
-    isLoading: false,
-    errors: null
-  };
-
   const mockUser = {
     email: 'test@example.com',
     name: 'Test User'

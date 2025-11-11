@@ -4,7 +4,8 @@ import {
   getUserOrders,
   getOrderByNumber,
   clearOrder,
-  orderReducer
+  orderReducer,
+  initialState
 } from '../services/slices/order-slice';
 
 jest.mock('../utils/burger-api.ts', () => ({
@@ -23,17 +24,6 @@ jest.mock('../utils/error-types', () => ({
 }));
 
 describe('Тест слайса заказов', () => {
-  const initialState = {
-    order: null,
-    loading: false,
-    error: null,
-    createdOrder: null,
-    feedOrders: [],
-    userOrders: [],
-    total: 0,
-    totalToday: 0
-  };
-
   const mockOrder = {
     _id: '1',
     ingredients: ['ing1', 'ing2'],

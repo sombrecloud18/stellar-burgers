@@ -1,6 +1,7 @@
 import {
   fetchIngredients,
-  ingredientsReducer
+  ingredientsReducer,
+  initialState
 } from '../services/slices/ingredients-slice';
 
 jest.mock('../utils/burger-api.ts', () => ({
@@ -10,12 +11,6 @@ jest.mock('../utils/burger-api.ts', () => ({
 const mockGetIngredients = require('../utils/burger-api.ts').getIngredientsApi;
 
 describe('Тест слайса ингредиентов', () => {
-  const initialState = {
-    ingredientsArr: [],
-    error: null,
-    loading: false
-  };
-
   const mockIngredients = [
     {
       _id: '643d69a5c3f7b9001cfa0941',
